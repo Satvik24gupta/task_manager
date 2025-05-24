@@ -1,77 +1,10 @@
-// document.addEventListener("DOMContentLoaded", ()=>{
-//     let task_input = document.getElementById("task-input").value
-    
-//     add_task_btn = document.querySelector("#add-task-btn")
-//     // console.log(add_task_btn);
-
-//     var tasks_arr = [];
-
-//     add_task_btn.addEventListener("click",(e)=>{
-//         e.preventDefault()
-//         let task_input = document.getElementById("task-input").value
-
-//         let obj = {
-//             id:tasks_arr.length+1,
-//             task: task_input,
-//             status: false
-//         }
-//         tasks_arr.push (obj);
-        
-//         document.getElementById("task-input").value=""
-
-//         //===================================== Displaying the task_array in the DOM =====================================
-//         task_list = document.querySelector("#task-list")
-//         console.log(task_list);
-
-//         li = document.createElement("li")
-        
-//         task_list.innerHTML =""
-//         for(let i=0;i<tasks_arr.length;i++){
-//             li = document.createElement("li")
-//             span = document.createElement("span")
-//             div = document.createElement("div")
-//             btn1 = document.createElement("button")
-//             btn2 = document.createElement("button")
-//             btn3 = document.createElement("button")
-
-//             span.innerText = tasks_arr[i].task
-//             btn1.innerText = "Complete"
-//             btn2.innerText = "Edit"
-//             btn3.innerText = "Delete"
-
-//             div.appendChild (btn1)
-//             div.appendChild (btn2)
-//             div.appendChild (btn3)
-//             li.classList.add("task-item")
-//             div.classList.add("task-actions")
-//             li.appendChild(span)
-//             li.appendChild(div)
-
-//             task_list.appendChild(li)
-//         }
-
-
-
-//         // for (let i = 0; i < array.length; i++) {
-//         //     li = document.createElement("li")
-//         //     span = document.createElement("span")
-//         //     div = document.createElement("div")
-//         //     btn1 = document.createElement("button")
-//         //     btn2 = document.createElement("button")
-//         //     btn3 = document.createElement("button")
-
-
-
-//         // }
-
-
-
-//     } );
-// })
-
-
 document.addEventListener("DOMContentLoaded", ()=>{
-    task_array = [];
+    // localStorage.setItem("name", "John");
+    // console.log(localStorage.getItem("name"))
+    // task_array = [];
+    task_array = JSON.parse(localStorage.getItem("task_array")) || []
+    localStorage.setItem("task_array", JSON.stringify(task_array))
+    renderTask(task_array)
     addBtn = document.querySelector('#add-task-btn')
     filterBtns = document.querySelector('.filter-buttons')
     allBtn = filterBtns.querySelector('#filter-all')
@@ -97,49 +30,33 @@ document.addEventListener("DOMContentLoaded", ()=>{
     })
     addBtn.addEventListener("click", (e)=>{
         e.preventDefault()
-        // console.log("clicked");
+        if (task_array.length){
+            id = task_array[task_array.length-1]['id']+1;
+        }
+        else{
+            id = 1;
+        }
         task_input = document.querySelector("#task-input")
         let obj = {
-            id: task_array.length+1,
-            // task_name: task_input.value.trim(),
+            id: id,
             task_name: task_input.value,
             isCompleted: false
         }
+        id++
         if((task_input.value.trim()!=''))
         {
             task_array.push(obj)
         }
-        // console.log(task_array);
-        // task_list = document.querySelector("#task-list")
-        // task_list.innerHTML+=`
-        // <li class="task-item">
-        //     <span>${task_input.value}</span> 
-        //     <div class="task-actions">    
-        //         <button>Complete</button>
-        //         <button>Edit</button>
-        //         <button>Delete</button>
-        //     </div>
-        // </li>
-        // `
+        localStorage.setItem("task_array", JSON.stringify(task_array))
         renderTask(task_array)
         task_input.value = ""
     })
     
     function renderTask(task_array) {
         task_list = document.querySelector("#task-list")
-        // task_list.innerHTML+=`
-        // <li class="task-item">
-        //     <span>${task_input.value}</span> 
-        //     <div class="task-actions">    
-        //         <button>Complete</button>
-        //         <button>Edit</button>
-        //         <button>Delete</button>
-        //     </div>
-        // </li>
-        // `
         task_list.innerHTML = '' 
         task_array.forEach((i)=>{
-            li = document.createElement('li')
+            let li = document.createElement('li')
             li.innerHTML += `
             <span>${i.task_name}</span> 
             <div class="task-actions">    
@@ -154,25 +71,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
 
             li.querySelector(".delete-btn").addEventListener("click", ()=>deleteTask(i.id))
             li.querySelector(".complete-btn").addEventListener("click", ()=>completeTask(i.id))
-            // li.querySelector(".edit-btn").addEventListener("click", ()=>{
-            //     let span = li.querySelector('span')
-            //     let spanText = span.innerText
-            //     let input = document.createElement('input')
-            //     // span.appendChild(input)
-            //     span.replaceWith(input)
-            //     input.focus()
-            //     input.value = spanText
-            //     input.addEventListener("blur", ()=>{
-            //         let task_name = input.value
-            //         mySpan = document.createElement('span')
-            //         mySpan.innerText = task_name
-            //         input.replaceWith(mySpan)
-            //         editTask(i.id, task_name)
-            //         console.log(task_name);
-            //     })
-            //     console.log(span);
-            //     // editTask(i.id)
-            // })
             li.querySelector(".edit-btn").addEventListener("click", ()=>{
                 let span = li.querySelector('span')
                 console.log(span);
@@ -199,6 +97,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
             return element.id !== taskId
         })
         task_array = newArray
+        localStorage.setItem("task_array", JSON.stringify(task_array))
         renderTask(task_array)
     }
 
@@ -210,6 +109,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
             return element;
         })
         task_array = newArray
+        localStorage.setItem("task_array", JSON.stringify(task_array))
         renderTask(task_array)
     }
 
@@ -218,6 +118,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
             return element.isCompleted == false
         })
         task_array = newArray
+        localStorage.setItem("task_array", JSON.stringify(task_array))
         renderTask(task_array)
     }
 
@@ -240,8 +141,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
     }
 
     function editTask(task_id, task_name) {
-        console.log("BHai teri id hai: ", task_id);
-        // let updated_value = prompt("Enter updated value", "qwsdfghjkl;lkjhgfcx")
         newArray = task_array.map((element)=>{
             if(element.id == task_id) {
                 element.task_name = task_name;
@@ -249,6 +148,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
             return element;
         })
         task_array = newArray
+        localStorage.setItem("task_array", JSON.stringify(task_array))
         renderTask(task_array)
     }
 })
